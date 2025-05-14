@@ -1,0 +1,267 @@
+:root {
+  --primary: #1976d2;
+  --primary-dark: #125ea2;
+  --light: #f4f4f4;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+  --transition: 0.3s ease;
+}
+  
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: #333;
+}
+  
+header {
+  position: relative;
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 1.2rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 2px 4px var(--shadow);
+  letter-spacing: 1px;
+}
+  
+main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  transition: var(--transition);
+  position: relative;
+}
+  
+.sidebar {
+  width: 320px;
+  background: var(--light);
+  padding: 1.2rem;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
+  box-shadow: inset -1px 0 3px var(--shadow);
+  transition: transform var(--transition);
+  transform: translateX(0);
+  z-index: 2;
+  position: absolute;
+  height: 100%;
+}
+  
+.sidebar h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+  
+  label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    font-size: 0.95rem;
+  }
+  
+  .sidebar input,
+  .sidebar select {
+    margin-top: 0.4rem;
+    padding: 0.5rem;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px var(--shadow);
+    transition: border var(--transition);
+  }
+  
+  .sidebar input:focus,
+  .sidebar select:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  
+  .range-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .range-group input {
+    flex: 1;
+  }
+  
+  .wind-dir-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+  
+  .wind-dir-group label {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: var(--radius);
+    cursor: pointer;
+    user-select: none;
+    transition: background var(--transition);
+  }
+  
+  .wind-dir-group input {
+    margin-right: 0.3rem;
+  }
+  
+  button {
+    width: 100%;
+    padding: 0.7rem;
+    font-weight: bold;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background var(--transition);
+    box-shadow: 0 2px 4px var(--shadow);
+  }
+  
+  button:hover {
+    background: var(--primary-dark);
+  }
+  
+
+.map-container {
+  flex: 1;
+  position: relative;
+  transition: var(--transition);
+  margin-left: 320px; /* Matches sidebar width */
+}
+  
+#map {
+  width: 100%;
+  height: 100%;
+  background-color: #c4daed;
+}
+  
+  footer {
+    text-align: center;
+    padding: 0.75rem;
+    background: #eee;
+    font-size: 0.9rem;
+    box-shadow: 0 -1px 3px var(--shadow);
+  }
+
+  .inline-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+#toggleCurrentBtn {
+  flex-shrink: 0;
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 0.45rem 0.75rem;
+  font-weight: bold;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#toggleCurrentBtn.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary-dark);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+  
+}
+
+.weather-popup {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  padding: 10px;
+  line-height: 1.5;
+  font-size: 14px;
+  
+  
+}
+
+.weather-popup h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #2a78d3;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+ 
+}
+
+.weather-popup p {
+  margin: 4px 0;
+  
+  
+}
+
+.leaflet-control-layers {
+  background: white !important;
+  border: 1px solid #aaa !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  padding: 8px;
+}
+
+.leaflet-control-layers-expanded {
+  width: 160px;
+}
+
+.leaflet-control-layers label {
+  display: block;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.leaflet-control-layers-separator {
+  height: 1px;
+  background: #ccc;
+  margin: 8px 0;
+}
+
+#toggleSidebarBtn {
+  width: 2.5rem;
+  height: 2.5rem;
+  right: 1rem;
+  top: 1rem;
+  background: white;
+  border: none;
+  color: var(--primary-dark);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: background var(--transition);
+}
+
+#toggleSidebarBtn:hover {
+  background: #f0f0f0;
+}
+
+
+.sidebar.hidden {
+  transform: translateX(-100%);
+  position: absolute;
+  z-index: 10;
+}
+
+.sidebar.hidden + .map-container {
+  margin-left: 0;
+}
+

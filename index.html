@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather Filter Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <button id="toggleSidebarBtn">☰</button>
+    🌤️ Weather Filter Map
+  </header>
+  <main>
+    <div class="sidebar">
+      <h2>Filter Parameters</h2>
+
+      <label class="inline-labels">Country:
+        <select name="countries" id="country">
+          <hr style="border: none; border-top: 1px solid #ccc;">
+          <optgroup label="Europe">
+            <option value="AL">Albania</option>
+            <option value="AD">Andorra</option>
+            <option value="AT">Austria</option>
+            <option value="BE">Belgium</option>
+            <option value="BA">Bosnia and Herzegovina</option>
+            <option value="BG">Bulgaria</option>
+            <option value="HR">Croatia</option>
+            <option value="CZ">Czechia</option>
+            <option value="DK">Denmark</option>
+            <option value="EE">Estonia</option>
+            <option value="FI">Finland</option>
+            <option value="FR">France</option>
+            <option value="DE">Germany</option>
+            <option value="GR">Greece</option>
+            <option value="HU">Hungary</option>
+            <option value="IS">Iceland</option>
+            <option value="IE">Ireland</option>
+            <option value="IT">Italy</option>
+            <option value="LV">Latvia</option>
+            <option value="LT">Lithuania</option>
+            <option value="LU">Luxembourg</option>
+            <option value="MT">Malta</option>
+            <option value="MD">Moldova</option>
+            <option value="MC">Monaco</option>
+            <option value="ME">Montenegro</option>
+            <option value="NL">Netherlands</option>
+            <option value="MK">North Macedonia</option>
+            <option value="NO">Norway</option>
+            <option value="PL">Poland</option>
+            <option value="PT">Portugal</option>
+            <option value="RO">Romania</option>
+            <option value="SM">San Marino</option>
+            <option value="RS">Serbia</option>
+            <option value="SK">Slovakia</option>
+            <option value="SI">Slovenia</option>
+            <option value="ES">Spain</option>
+            <option value="SE">Sweden</option>
+            <option value="CH">Switzerland</option>
+            <option value="UA">Ukraine</option>
+            <option value="GB">United Kingdom</option>
+          </optgroup>
+        <hr style="border: none; border-top: 1px solid #ccc;">
+          <optgroup label="North America">
+            <option value="BS">Bahamas</option>
+            <option value="BZ">Belize</option>
+            <option value="CA">Canada</option>
+            <option value="CR">Costa Rica</option>
+            <option value="CU">Cuba</option>
+            <option value="DO">Dominican Republic</option>
+            <option value="SV">El Salvador</option>
+            <option value="GT">Guatemala</option>
+            <option value="HT">Haiti</option>
+            <option value="HN">Honduras</option>
+            <option value="JM">Jamaica</option>
+            <option value="MX">Mexico</option>
+            <option value="NI">Nicaragua</option>
+            <option value="PA">Panama</option>
+            <option value="KN">Saint Kitts and Nevis</option>
+            <option value="LC">Saint Lucia</option>
+            <option value="VC">Saint Vincent and the Grenadines</option>
+            <option value="TT">Trinidad and Tobago</option>
+            <option value="US">United States</option>
+          </optgroup>
+        <hr style="border: none; border-top: 1px solid #ccc;">
+          <optgroup label="South America">
+            <option value="AR">Argentina</option>
+            <option value="BO">Bolivia</option>
+            <option value="BR">Brazil</option>
+            <option value="CL">Chile</option>
+            <option value="CO">Colombia</option>
+            <option value="EC">Ecuador</option>
+            <option value="GY">Guyana</option>
+            <option value="PY">Paraguay</option>
+            <option value="PE">Peru</option>
+            <option value="UY">Uruguay</option>
+            <option value="VE">Venezuela</option>
+          </optgroup>
+        </select>
+      </label>
+
+      <button id="toggleCurrentBtn" onclick="toggleCurrentWeather()">Current Weather</button>
+
+      <label>Date:
+        <input type="date" id="dateInput"/>
+      </label>
+
+      <label>Time:
+        <input type="time" id="time"/>
+      </label>
+
+      <label>Temperature (°C)
+        <div class="range-group">
+          <input type="number" id="tempMin" placeholder="Min"/>
+          <input type="number" id="tempMax" placeholder="Max"/>
+        </div>
+      </label>
+
+      <label>Wind Speed (km/h)
+        <div class="range-group">
+          <input type="number" id="windMin" placeholder="Min"/>
+          <input type="number" id="windMax" placeholder="Max"/>
+        </div>
+      </label>
+
+      <label>Wind Direction:
+        <div class="wind-dir-group">
+          <label><input type="checkbox" class="wind-dir" value="N"><span>N</span></label>
+          <label><input type="checkbox" class="wind-dir" value="NE"><span>NE</span></label>
+          <label><input type="checkbox" class="wind-dir" value="E"><span>E</span></label>
+          <label><input type="checkbox" class="wind-dir" value="SE"><span>SE</span></label>
+          <label><input type="checkbox" class="wind-dir" value="S"><span>S</span></label>
+          <label><input type="checkbox" class="wind-dir" value="SW"><span>SW</span></label>
+          <label><input type="checkbox" class="wind-dir" value="W"><span>W</span></label>
+          <label><input type="checkbox" class="wind-dir" value="NW"><span>NW</span></label>
+        </div>
+      </label>
+
+      <label>Humidity (%)
+        <div class="range-group">
+          <input type="number" id="humidityMin" placeholder="Min"/>
+          <input type="number" id="humidityMax" placeholder="Max"/>
+        </div>
+      </label>
+
+      <label>Pressure (hPa)
+        <div class="range-group">
+          <input type="number" id="pressureMin" placeholder="Min"/>
+          <input type="number" id="pressureMax" placeholder="Max"/>
+        </div>
+      </label>
+
+      <label>Visibility (m)
+        <div class="range-group">
+          <input type="number" id="visibilityMin" placeholder="Min"/>
+          <input type="number" id="visibilityMax" placeholder="Max"/>
+        </div>
+      </label>
+
+      <label>Cloud Cover (%)
+        <div class="range-group">
+          <input type="number" id="cloudMin" placeholder="Min"/>
+          <input type="number" id="cloudMax" placeholder="Max"/>
+        </div>
+      </label>
+
+      <button onclick="applyFilters()">Apply Filters</button>
+    </div>
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
