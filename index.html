@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Weather & Soil Dashboard</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
   <link rel="stylesheet" href="style.css" />
-</head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+</head> 
 <body class="blue-theme">
   <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem;">
     <div style="display: flex; align-items: center; gap: 1rem;">
       <button id="toggleSidebarBtn">☰</button>
-      <span style="font-size: 1.8rem; font-weight: bold;">Woke and Based</span>
+      <span style="font-size: 1.8rem; font-weight: bold; justify-content: right;">WFM</span>
     </div>
     <button id="modeSwitchBtn" class="mode-switch-btn">🌿 Soil Mode</button>
   </header>
 
   <main>
+    
     <!-- WEATHER SECTION -->
     <div id="weatherSection">
 
@@ -101,7 +104,7 @@
   </label>
 
   <!-- Collapsible: Temperature -->
-  <details open>
+  <details>
     <summary>🌡 Temperature</summary>
     <label>
       <div class="range-group">
@@ -133,6 +136,23 @@
       </div>
     </label>
   </details>
+  
+  <!-- Collapsible: Weather Condition -->
+  <details>
+  <summary>🌦 Weather Condition</summary>
+  <label>
+    <select id="weatherCondition">
+      <option value="">Any</option>
+      <option value="Clear">Clear Sky</option>
+      <option value="Clouds">Clouds</option>
+      <option value="Drizzle">Shower Rain</option>
+      <option value="Rain">Rain</option>
+      <option value="Thunderstorm">Thunderstorm</option>
+      <option value="Snow">Snow</option>
+      <option value="Mist">Mist</option>
+    </select>
+  </label>
+</details>
 
   <!-- Collapsible: Humidity -->
   <details>
@@ -167,6 +187,7 @@
     </label>
   </details>
 
+  
   <!-- Collapsible: Cloud Cover -->
   <details>
     <summary>☁ Cloud Cover</summary>
@@ -177,15 +198,27 @@
       </div>
     </label>
   </details>
+  
 
       
 
       <button onclick="applyFilters()">Apply Filters</button>
       <button id="resetFiltersBtn" style="margin-top: 0.5rem; background: 1976d2;">Reset Filters</button>
+      
+      
 
     </div>
 
+      <div id="summaryPanel" class="summary-panel">
+        <p style="justify-self: center;">No data yet.</p>
+      </div>
+
+      
+
+  
+
     </div>
+    
 
     <!-- SOIL SECTION (initially hidden) -->
     <div id="soilSection" style="display: none;">
@@ -230,11 +263,31 @@
 
     <div class="map-container">
       <div id="map"></div>
+      <button id="toggleLegendBtn" class="map-button">Legend</button>
     </div>
+        <div id="legend" class="legend-panel">
+          
+  <h4>Weather Legend</h4>
+  <ul>
+    <li><img src="http://openweathermap.org/img/wn/01d.png" alt="Clear" /> Clear Sky</li>
+    <li><img src="http://openweathermap.org/img/wn/02d.png" alt="Few_Clouds" /> Few Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/03d.png" alt="Scattered_Clouds" /> Scattered Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/04d.png" alt="804" /> Broken Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/09d.png" alt="Shower_Rain" /> Shower Rain</li>
+    <li><img src="http://openweathermap.org/img/wn/10d.png" alt="Rain" /> Rain</li>
+    <li><img src="http://openweathermap.org/img/wn/11d.png" alt="Thunderstorm" /> Thunderstorm</li>
+    <li><img src="http://openweathermap.org/img/wn/13d.png" alt="Snow" /> Snow</li>
+    <li><img src="http://openweathermap.org/img/wn/50d.png" alt="Mist" /> Mist</li>
+  </ul>
+</div>
     
+
   </main>
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="script.js"></script>
+  
+  
 </body>
 </html>

@@ -33,6 +33,7 @@ L.control.layers(baseLayers, null, { position: 'bottomleft' }).addTo(map);
 
 const API_KEY = 'a759bafd46f6fb88c23a0423dc3290bd';
 let markers = [];
+let markerCluster = L.markerClusterGroup();
 
 const countryBBoxes = {
 
@@ -118,8 +119,11 @@ function getCountryCenter(bboxString) {
 }
 
 function applyFilters() {
-  markers.forEach(marker => map.removeLayer(marker));
+  markers.forEach(obj => map.removeLayer(obj.marker));
   markers = [];
+
+  map.removeLayer(markerCluster);
+  markerCluster = L.markerClusterGroup();
 
   const getValue = (id, fallback) => {
     const val = document.getElementById(id).value;
@@ -138,12 +142,14 @@ function applyFilters() {
   const visibilityMax = getValue("visibilityMax", 100000);
   const cloudMin = getValue("cloudMin", 0);
   const cloudMax = getValue("cloudMax", 100);
+  
 
   const selectedDirs = Array.from(document.querySelectorAll(".wind-dir-group input:checked")).map(el => el.value);
 
   const date = document.getElementById("dateInput").value;
   const time = document.getElementById("time").value || "00:00";
   const country = document.getElementById("country").value;
+  const selectedWeather = document.getElementById("weatherCondition").value;
   const bbox = countryBBoxes[country];
 
   const [hour, minute] = time.split(":").map(Number);
@@ -195,13 +201,14 @@ function applyFilters() {
               entry.main.humidity < humidityMin || entry.main.humidity > humidityMax ||
               entry.main.pressure < pressureMin || entry.main.pressure > pressureMax ||
               (entry.visibility ?? 10000) < visibilityMin || (entry.visibility ?? 10000) > visibilityMax ||
-              entry.clouds.all < cloudMin || entry.clouds.all > cloudMax
+              entry.clouds.all < cloudMin || entry.clouds.all > cloudMax ||
+              (selectedWeather && entry.weather[0].main !== selectedWeather)
             ) {
               return;
             }
 
             const iconCode = isCurrentWeather ? forecast.weather[0].icon : entry.weather[0].icon;
-            const iconUrl = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+            const iconUrl = `http://openweathermap.org/img/wn/${iconCode}@4x.png`;
 
             const weatherIcon = L.icon({
               iconUrl: iconUrl,
@@ -223,13 +230,31 @@ function applyFilters() {
               </div>
             `;
 
-            const marker = L.marker([city.coord.Lat, city.coord.Lon], { icon: weatherIcon })
-              .addTo(map)
-              .bindPopup(popup);
+            const leafletMarker = L.marker([city.coord.Lat, city.coord.Lon], { icon: weatherIcon })
+              .bindPopup(popup)
+            markerCluster.addLayer(leafletMarker)
+            markers.push({
+              marker: leafletMarker,
+              temp: entry.main.temp,
+              humidity: entry.main.humidity
+            });
 
-            markers.push(marker);
           });
       });
+      map.addLayer(markerCluster);
+
+      setTimeout(() => {
+  const count = markers.length;
+  const avgTemp = (markers.reduce((sum, m) => sum + m.temp, 0) / count).toFixed(1);
+  const avgHumidity = (markers.reduce((sum, m) => sum + m.humidity, 0) / count).toFixed(1);
+
+  document.getElementById("summaryPanel").innerHTML = `
+    <p><strong>🔎 Matching Cities:</strong> ${count}</p>
+    <p><strong>🌡 Avg Temp:</strong> ${avgTemp}°C</p>
+    <p><strong>💧 Avg Humidity:</strong> ${avgHumidity}%</p>
+  `;
+}, 10000); // Wait a bit for all markers to render
+
     })
     .catch(err => console.error("Error fetching city box data:", err));
 }
@@ -271,7 +296,7 @@ document.getElementById("modeSwitchBtn").addEventListener("click", () => {
 
   if (isWeather) {
     // Switched to Soil mode: clear map markers
-    markers.forEach(marker => map.removeLayer(marker));
+    markers.forEach(obj => map.removeLayer(obj.marker));
     markers = [];
   }
 });
@@ -291,12 +316,23 @@ function resetFilters() {
     select.selectedIndex = 0;
   });
 
-  document.getElementById("toggleCurrentBtn").classList.remove("active");
   document.getElementById("dateInput").disabled = false;
   document.getElementById("time").disabled = false;
+  document.getElementById("weatherCondition").selectedIndex = 0;
+ 
 
-  console.log("🔁 Filters reset to default");
+
 }
 
 document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
+
+const legendPanel = document.getElementById("legend");
+const toggleLegendBtn = document.getElementById("toggleLegendBtn");
+
+toggleLegendBtn.addEventListener("click", () => {
+  legendPanel.classList.toggle("hidden");
+});
+
+
+
 
