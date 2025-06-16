@@ -1,20 +1,30 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weather Filter Map</title>
+  <title>Weather & Soil Dashboard</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
   <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header>
-    <button id="toggleSidebarBtn">☰</button>
-    🌤️ Weather Filter Map
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+</head> 
+<body class="blue-theme">
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <button id="toggleSidebarBtn">☰</button>
+      <span style="font-size: 1.8rem; font-weight: bold; justify-content: right;">WFM</span>
+    </div>
+    <button id="modeSwitchBtn" class="mode-switch-btn">🌿 Soil Mode</button>
   </header>
+
   <main>
+    
+    <!-- WEATHER SECTION -->
+    <div id="weatherSection">
+
     <div class="sidebar">
-      <h2>Filter Parameters</h2>
+      <h2>Weather Parameters</h2>
 
       <label class="inline-labels">Country:
         <select name="countries" id="country">
@@ -43,7 +53,6 @@
             <option value="LU">Luxembourg</option>
             <option value="MT">Malta</option>
             <option value="MD">Moldova</option>
-            <option value="MC">Monaco</option>
             <option value="ME">Montenegro</option>
             <option value="NL">Netherlands</option>
             <option value="MK">North Macedonia</option>
@@ -51,7 +60,6 @@
             <option value="PL">Poland</option>
             <option value="PT">Portugal</option>
             <option value="RO">Romania</option>
-            <option value="SM">San Marino</option>
             <option value="RS">Serbia</option>
             <option value="SK">Slovakia</option>
             <option value="SI">Slovenia</option>
@@ -63,25 +71,10 @@
           </optgroup>
         <hr style="border: none; border-top: 1px solid #ccc;">
           <optgroup label="North America">
-            <option value="BS">Bahamas</option>
-            <option value="BZ">Belize</option>
             <option value="CA">Canada</option>
-            <option value="CR">Costa Rica</option>
-            <option value="CU">Cuba</option>
-            <option value="DO">Dominican Republic</option>
-            <option value="SV">El Salvador</option>
-            <option value="GT">Guatemala</option>
-            <option value="HT">Haiti</option>
-            <option value="HN">Honduras</option>
-            <option value="JM">Jamaica</option>
             <option value="MX">Mexico</option>
-            <option value="NI">Nicaragua</option>
-            <option value="PA">Panama</option>
-            <option value="KN">Saint Kitts and Nevis</option>
-            <option value="LC">Saint Lucia</option>
-            <option value="VC">Saint Vincent and the Grenadines</option>
-            <option value="TT">Trinidad and Tobago</option>
-            <option value="US">United States</option>
+            <option value="US">Ustined Tate</option>
+            <option value="WC">Wordy Caribbean</option>
           </optgroup>
         <hr style="border: none; border-top: 1px solid #ccc;">
           <optgroup label="South America">
@@ -100,79 +93,208 @@
         </select>
       </label>
 
-      <button id="toggleCurrentBtn" onclick="toggleCurrentWeather()">Current Weather</button>
+<button id="toggleCurrentBtn" onclick="toggleCurrentWeather()">Current Weather</button>
 
-      <label>Date:
-        <input type="date" id="dateInput"/>
-      </label>
+<details open>
+  <summary>📅 Forecast Date</summary>
+  <label for="dateInput">
+    <input type="date" id="dateInput" />
+  </label>
+</details>
 
-      <label>Time:
-        <input type="time" id="time"/>
-      </label>
+<details open>
+  <summary>⏰ Forecast Time</summary>
+  <div class="time-slider-wrapper">
+    <span id="timeLabel">00:00</span>
+    <input type="range" id="timeSlider" min="0" max="21" step="3" value="0" />
+  </div>
+</details>
 
-      <label>Temperature (°C)
-        <div class="range-group">
-          <input type="number" id="tempMin" placeholder="Min"/>
-          <input type="number" id="tempMax" placeholder="Max"/>
-        </div>
-      </label>
+  <!-- Collapsible: Temperature -->
+  <details>
+    <summary>🌡 Temperature</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="tempMin" placeholder="Min"/>
+        <input type="number" id="tempMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <label>Wind Speed (km/h)
-        <div class="range-group">
-          <input type="number" id="windMin" placeholder="Min"/>
-          <input type="number" id="windMax" placeholder="Max"/>
-        </div>
-      </label>
+  <!-- Collapsible: Wind -->
+  <details>
+    <summary>💨 Wind</summary>
+    <label>Speed (km/h)
+      <div class="range-group">
+        <input type="number" id="windMin" placeholder="Min"/>
+        <input type="number" id="windMax" placeholder="Max"/>
+      </div>
+    </label>
+    <label>Direction:
+      <div class="wind-dir-group">
+        <label><input type="checkbox" class="wind-dir" value="N"><span>N</span></label>
+        <label><input type="checkbox" class="wind-dir" value="NE"><span>NE</span></label>
+        <label><input type="checkbox" class="wind-dir" value="E"><span>E</span></label>
+        <label><input type="checkbox" class="wind-dir" value="SE"><span>SE</span></label>
+        <label><input type="checkbox" class="wind-dir" value="S"><span>S</span></label>
+        <label><input type="checkbox" class="wind-dir" value="SW"><span>SW</span></label>
+        <label><input type="checkbox" class="wind-dir" value="W"><span>W</span></label>
+        <label><input type="checkbox" class="wind-dir" value="NW"><span>NW</span></label>
+      </div>
+    </label>
+  </details>
+  
+  <!-- Collapsible: Weather Condition -->
+  <details>
+  <summary>🌦 Weather Condition</summary>
+  <label>
+    <select id="weatherCondition">
+      <option value="">Any</option>
+      <option value="Clear">Clear Sky</option>
+      <option value="Clouds">Clouds</option>
+      <option value="Drizzle">Shower Rain</option>
+      <option value="Rain">Rain</option>
+      <option value="Thunderstorm">Thunderstorm</option>
+      <option value="Snow">Snow</option>
+      <option value="Mist">Mist</option>
+    </select>
+  </label>
+</details>
 
-      <label>Wind Direction:
-        <div class="wind-dir-group">
-          <label><input type="checkbox" class="wind-dir" value="N"><span>N</span></label>
-          <label><input type="checkbox" class="wind-dir" value="NE"><span>NE</span></label>
-          <label><input type="checkbox" class="wind-dir" value="E"><span>E</span></label>
-          <label><input type="checkbox" class="wind-dir" value="SE"><span>SE</span></label>
-          <label><input type="checkbox" class="wind-dir" value="S"><span>S</span></label>
-          <label><input type="checkbox" class="wind-dir" value="SW"><span>SW</span></label>
-          <label><input type="checkbox" class="wind-dir" value="W"><span>W</span></label>
-          <label><input type="checkbox" class="wind-dir" value="NW"><span>NW</span></label>
-        </div>
-      </label>
+  <!-- Collapsible: Humidity -->
+  <details>
+    <summary>💧 Humidity</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="humidityMin" placeholder="Min"/>
+        <input type="number" id="humidityMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <label>Humidity (%)
-        <div class="range-group">
-          <input type="number" id="humidityMin" placeholder="Min"/>
-          <input type="number" id="humidityMax" placeholder="Max"/>
-        </div>
-      </label>
+  <!-- Collapsible: Pressure -->
+  <details>
+    <summary>🔽 Pressure</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="pressureMin" placeholder="Min"/>
+        <input type="number" id="pressureMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <label>Pressure (hPa)
-        <div class="range-group">
-          <input type="number" id="pressureMin" placeholder="Min"/>
-          <input type="number" id="pressureMax" placeholder="Max"/>
-        </div>
-      </label>
+  <!-- Collapsible: Visibility -->
+  <details>
+    <summary>👁 Visibility</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="visibilityMin" placeholder="Min"/>
+        <input type="number" id="visibilityMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <label>Visibility (m)
-        <div class="range-group">
-          <input type="number" id="visibilityMin" placeholder="Min"/>
-          <input type="number" id="visibilityMax" placeholder="Max"/>
-        </div>
-      </label>
+  
+  <!-- Collapsible: Cloud Cover -->
+  <details>
+    <summary>☁ Cloud Cover</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="cloudMin" placeholder="Min"/>
+        <input type="number" id="cloudMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
+  
 
-      <label>Cloud Cover (%)
-        <div class="range-group">
-          <input type="number" id="cloudMin" placeholder="Min"/>
-          <input type="number" id="cloudMax" placeholder="Max"/>
-        </div>
-      </label>
+      
 
       <button onclick="applyFilters()">Apply Filters</button>
+      <button id="resetFiltersBtn" style="margin-top: 0.5rem; background: 1976d2;">Reset Filters</button>
+      
+      
+
     </div>
+
+      <div id="summaryPanel" class="summary-panel">
+        <p style="justify-self: center;">No data yet.</p>
+      </div>
+
+      
+
+  
+
+    </div>
+    
+
+    <!-- SOIL SECTION (initially hidden) -->
+    <div id="soilSection" style="display: none;">
+      <div class="sidebar">
+        <h2>Soil Parameters</h2>
+
+<label>Date:
+  <input type="date" id="soilDate"/>
+</label>
+
+<label>Soil Moisture (%)
+  <div class="range-group">
+    <input type="number" id="soilMoistureMin" placeholder="Min"/>
+    <input type="number" id="soilMoistureMax" placeholder="Max"/>
+  </div>
+</label>
+
+<label>Soil Temperature (°C)
+  <div class="range-group">
+    <input type="number" id="soilTempMin" placeholder="Min"/>
+    <input type="number" id="soilTempMax" placeholder="Max"/>
+  </div>
+</label>
+
+<label>Soil Type:
+  <select id="soilType">
+    <option value="">Any</option>
+    <option value="sandy">Sandy</option>
+    <option value="loamy">Loamy</option>
+    <option value="clay">Clay</option>
+    <option value="silt">Silt</option>
+    <option value="peat">Peat</option>
+    <option value="chalk">Chalk</option>
+  </select>
+</label>
+
+<button onclick="applySoilFilters()">Apply Soil Filters</button>
+
+      </div>
+    </div>
+    
+
     <div class="map-container">
       <div id="map"></div>
+      <button id="toggleLegendBtn" class="map-button">Legend</button>
     </div>
+        <div id="legend" class="legend-panel">
+          
+  <h4>Weather Legend</h4>
+  <ul>
+    <li><img src="http://openweathermap.org/img/wn/01d.png" alt="Clear" /> Clear Sky</li>
+    <li><img src="http://openweathermap.org/img/wn/02d.png" alt="Few Clouds" /> Few Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/03d.png" alt="Scattered Clouds" /> Scattered Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/04d.png" alt="Broken Clouds" /> Broken Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/09d.png" alt="Shower Rain" /> Shower Rain</li>
+    <li><img src="http://openweathermap.org/img/wn/10d.png" alt="Rain" /> Rain</li>
+    <li><img src="http://openweathermap.org/img/wn/11d.png" alt="Thunderstorm" /> Thunderstorm</li>
+    <li><img src="http://openweathermap.org/img/wn/13d.png" alt="Snow" /> Snow</li>
+    <li><img src="http://openweathermap.org/img/wn/50d.png" alt="Mist" /> Mist</li>
+  </ul>
+</div>
+    
+
   </main>
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="script.js"></script>
+  
+  
 </body>
 </html>
