@@ -4,7 +4,7 @@
   --light: #f4f4f4;
   --shadow: rgba(0, 0, 0, 0.1);
   --radius: 8px;
-  --transition: 0.3s ease;
+  --transition: 0.3s ease; 
 }
   
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,6 +135,7 @@ main {
   position: relative;
   transition: var(--transition);
   margin-left: 320px; /* Matches sidebar width */
+  
 }
   
 #map {
@@ -168,6 +169,7 @@ main {
   border: 1px solid #aaa;
   cursor: pointer;
   transition: background 0.2s ease;
+  margin-bottom: 15px;
 }
 
 #toggleCurrentBtn.active {
@@ -263,5 +265,460 @@ main {
 
 .sidebar.hidden + .map-container {
   margin-left: 0;
+}
+
+
+
+/* Theme switching */
+.blue-theme {
+  --primary: #1976d2;
+  --primary-dark: #125ea2;
+}
+.green-theme {
+  --primary: #4caf50;
+  --primary-dark: #388e3c;
+}
+
+/* Switch section button */
+.mode-switch-btn {
+  background-color: white;
+  color: var(--primary-dark);
+  border: 2px solid var(--primary-dark);
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 150px;
+  justify-content: right;
+}
+.mode-switch-btn:hover {
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+
+details {
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  background: #fafafa;
+  box-shadow: 0 1px 2px var(--shadow);
+}
+
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.summary-panel {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px var(--shadow);
+  font-size: 14px;
+  color: #333;
+  min-width: 220px;
+  z-index: 1000;
+  max-width: 300px;
+}
+
+.legend-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px var(--shadow);
+  font-size: 14px;
+  color: #333;
+  z-index: 1000;
+  width: 160px;
+}
+
+.legend-panel h4 {
+  margin-bottom: 0.5rem;
+  font-size: 15px;
+  color: var(--primary-dark);
+  
+}
+
+.legend-panel ul {
+  list-style: none;
+  padding-left: 0;
+  
+  
+}
+
+.legend-panel li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 13px;
+  
+}
+
+.legend-panel img {
+  width: 45px;
+  height: 45px;
+  margin-right: 8px;
+  border-radius: var(--radius);
+  background-color: var(--primary);
+}
+
+.map-button {
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  bottom: 25px;
+  right: 250px;
+  background: white;
+  color: var(--primary-dark);
+  border: 1px solid var(--primary-dark);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.8rem;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px var(--shadow);
+  z-index: 1001;
+  transition: background 0.2s ease;
+}
+
+.map-button:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.legend-panel.hidden {
+  display: none;
+  
+}
+
+
+
+.time-slider-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+#timeLabel {
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--primary-dark);
+  background: #76acd547;
+  padding: 0.3rem 6.7rem;
+  border-radius: 999px;
+  display: inline-block;
+  width: fit-content;
+  align-self: flex-start;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+#timeSlider {
+  width: 100%;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  appearance: none;
+  transition: background 0.3s ease;
+}
+
+#timeSlider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  border-radius: 3px;
+}
+
+#timeSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border: 2px solid var(--primary-dark);
+  border-radius: 50%;
+  margin-top: -6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+#timeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+#timeSlider::-moz-range-track {
+  height: 6px;
+  background: linear-gradient(to right, var(--primary), var(--primary-dark));
+  border-radius: 3px;
+}
+
+#timeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: white;
+  border: 2px solid var(--primary-dark);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+#timeSlider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+
+input[type="date"] {
+  appearance: none;
+  background: #f5f9ff;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  color: var(--primary-dark);
+  font-size: 0.95rem;
+  font-weight: bold;
+  box-shadow: inset 0 1px 2px var(--shadow);
+  width: 100%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+input[type="date"]:hover {
+  background: #e8f0fc;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+
+
+.sidebar select {
+  appearance: none;
+  background: #f5f9ff;
+  color: var(--primary-dark);
+  font-weight: bold;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  box-shadow: inset 0 1px 2px var(--shadow);
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%231976d2' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+.sidebar select:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+.search-bar-header {
+  position: relative;
+  display: inline-block;
+  margin-left: 15px;
+}
+
+#citySearchInput {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 0 8px 8px;
+  color: #333;
+}
+
+.suggestions-list li {
+  padding: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.suggestions-list li:hover {
+  background: #f2f2f2;
+}
+
+
+#toggleSummaryBtn {
+  margin-left: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #1976d2;
+  background: #1976d2;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#toggleSummaryBtn:hover {
+  background-color: #125ea2;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.search-bar-header {
+  display: flex;
+  align-items: center;
+}
+
+#citySearchInput {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 9999;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.suggestions-list li {
+  padding: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.suggestions-list li:hover {
+  background: #f2f2f2;
+}
+
+
+/* Layout principal do header */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Lado esquerdo */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Lado direito */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Título */
+.logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+/* Botões uniformes */
+.main-header button {
+  background-color: var(--primary);
+  border: 1px solid --primary;
+  padding: 7px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.main-header button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Barra de pesquisa */
+.search-bar-header {
+  position: relative;
+}
+
+#citySearchInput {
+  padding: 7px 12px;
+  border: 1px solid #883030;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+}
+
+/* Lista de sugestões */
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 9999;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 0 6px 6px;
+}
+
+.suggestions-list li {
+  padding: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.suggestions-list li:hover {
+  background: #f0f0f0;
 }
 
