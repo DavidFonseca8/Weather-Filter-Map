@@ -1,24 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="En">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weather Filter Map</title>
+  <title>Weather Dashboard</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
   <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header>
-    <button id="toggleSidebarBtn">☰</button>
-    🌤️ Weather Filter Map
-  </header>
-  <main>
-    <div class="sidebar">
-      <h2>Filter Parameters</h2>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-      <label class="inline-labels">Country:
+</head> 
+<body class="blue-theme">
+<header class="main-header">
+
+  <div class="header-left">
+    <button id="toggleSidebarBtn" title="Mostrar/Ocultar Filtros">☰</button>
+    <span class="logo">Weather Dashboard</span>
+    
+    <div id="filterModeSelector" class="filter-mode-selector">
+      <button id="snapshotModeBtn" class="active-mode">Search</button>
+      <button id="predictiveModeBtn">Find</button>
+    </div>
+
+    <button id="applyBtn" onclick="applyFilters()">Apply Filters</button>
+    <button onclick="clearAll()">Clear Popups</button>
+  </div>
+
+  <div class="header-right">
+    <button id="toggleSummaryBtn" title="Mostrar/Ocultar Resumo">📊</button>
+    <button id="toggleLegendBtn" title="Mostrar/Ocultar Legenda">🗺️</button>
+    <div class="search-bar-header">
+      <input type="text" id="citySearchInput" placeholder="🔍 Search City..." />
+      <ul id="searchSuggestions" class="suggestions-list"></ul>
+    </div>
+  </div>
+</header>
+
+
+  <main>
+    
+    <div id="weatherSection">
+
+    <div class="sidebar">
+      <h2>Weather Parameters</h2>
+
+     <details>
+      <summary>🌍 Country</summary>
+      <label for="country">
         <select name="countries" id="country">
           <hr style="border: none; border-top: 1px solid #ccc;">
+          
           <optgroup label="Europe">
             <option value="AL">Albania</option>
             <option value="AD">Andorra</option>
@@ -43,7 +75,6 @@
             <option value="LU">Luxembourg</option>
             <option value="MT">Malta</option>
             <option value="MD">Moldova</option>
-            <option value="MC">Monaco</option>
             <option value="ME">Montenegro</option>
             <option value="NL">Netherlands</option>
             <option value="MK">North Macedonia</option>
@@ -51,37 +82,22 @@
             <option value="PL">Poland</option>
             <option value="PT">Portugal</option>
             <option value="RO">Romania</option>
-            <option value="SM">San Marino</option>
             <option value="RS">Serbia</option>
             <option value="SK">Slovakia</option>
             <option value="SI">Slovenia</option>
             <option value="ES">Spain</option>
             <option value="SE">Sweden</option>
             <option value="CH">Switzerland</option>
+            <option value="TR">Turkey</option>
             <option value="UA">Ukraine</option>
             <option value="GB">United Kingdom</option>
           </optgroup>
         <hr style="border: none; border-top: 1px solid #ccc;">
           <optgroup label="North America">
-            <option value="BS">Bahamas</option>
-            <option value="BZ">Belize</option>
             <option value="CA">Canada</option>
-            <option value="CR">Costa Rica</option>
-            <option value="CU">Cuba</option>
-            <option value="DO">Dominican Republic</option>
-            <option value="SV">El Salvador</option>
-            <option value="GT">Guatemala</option>
-            <option value="HT">Haiti</option>
-            <option value="HN">Honduras</option>
-            <option value="JM">Jamaica</option>
             <option value="MX">Mexico</option>
-            <option value="NI">Nicaragua</option>
-            <option value="PA">Panama</option>
-            <option value="KN">Saint Kitts and Nevis</option>
-            <option value="LC">Saint Lucia</option>
-            <option value="VC">Saint Vincent and the Grenadines</option>
-            <option value="TT">Trinidad and Tobago</option>
             <option value="US">United States</option>
+            
           </optgroup>
         <hr style="border: none; border-top: 1px solid #ccc;">
           <optgroup label="South America">
@@ -97,82 +113,242 @@
             <option value="UY">Uruguay</option>
             <option value="VE">Venezuela</option>
           </optgroup>
+
+          </optgroup>
+        <hr style="border: none; border-top: 1px solid #ccc;">
+          <optgroup label="Rest of the World">
+            <option value="OC">Oceania</option>
+            <option value="AF">Africa</option>
+            <option value="AS">Asia</option>
+            <option value="RS">Russia</option>
+
+          </optgroup>
+
+
+
         </select>
+      </details>
       </label>
+      
+<div id="snapshotControls">
+    <details open>
+        <summary>📅 Time Selection</summary>
 
-      <button id="toggleCurrentBtn" onclick="toggleCurrentWeather()">Current Weather</button>
+        <div id="forecastControls">
+            <label for="timeModeSelector" style="font-weight: normal; margin-bottom: 1rem;">
+                Search by:
+                <select id="timeModeSelector" onchange="updateTimeModeUI()">
+                    <option value="exact">Exact Time</option>
+                    <option value="range">Time Range</option>
+                </select>
+            </label>
+            
+            <div id="exactTimeControls">
+                <summary>Forecast Date</summary>
+                <label for="dateInput">
+                    <input type="date" id="dateInput" />
+                </label>
+                <small style="display: block; margin-bottom: 8px; color: #666;">
+                    Forecast data is limited to the next 5 days.
+                </small>
+                <summary>Forecast Time</summary>
+                <div class="time-slider-wrapper">
+                    <span id="timeLabel">00:00</span>
+                    <input type="range" id="timeSlider" min="0" max="21" step="3" value="0" />
+                </div>
+            </div>
+            
+            <div id="timeRangeControls" class="hidden">
+                <summary>Start Date</summary>
+                <label for="dateInputStart">
+                    <input type="date" id="dateInputStart" />
+                </label>
 
-      <label>Date:
-        <input type="date" id="dateInput"/>
-      </label>
+                <summary style="margin-top: 1rem;">End Date</summary>
+                <label for="dateInputEnd">
+                    <input type="date" id="dateInputEnd" />
+                </label>
+                <small style="display: block; margin-bottom: 8px; color: #666;">
+                    The range is limited to the next 5 days.
+                </small>
 
-      <label>Time:
-        <input type="time" id="time"/>
-      </label>
-
-      <label>Temperature (°C)
-        <div class="range-group">
-          <input type="number" id="tempMin" placeholder="Min"/>
-          <input type="number" id="tempMax" placeholder="Max"/>
+                <summary style="margin-top: 1rem;">Start Time</summary>
+                <div class="time-slider-wrapper">
+                    <span id="timeLabelStart">00:00</span>
+                    <input type="range" id="timeSliderStart" min="0" max="21" step="3" value="0" />
+                </div>
+                <summary style="margin-top: 1rem;">End Time</summary>
+                <div class="time-slider-wrapper">
+                    <span id="timeLabelEnd">21:00</span>
+                    <input type="range" id="timeSliderEnd" min="0" max="21" step="3" value="21" />
+                </div>
+            </div>
         </div>
-      </label>
 
-      <label>Wind Speed (km/h)
-        <div class="range-group">
-          <input type="number" id="windMin" placeholder="Min"/>
-          <input type="number" id="windMax" placeholder="Max"/>
+        <hr style="margin: 1.5rem 0;">
+        <div id="currentWeatherControls">
+             <button id="toggleCurrentBtn" onclick="toggleCurrentWeather()">Current Weather</button>
         </div>
-      </label>
+    </details>
+</div>
 
-      <label>Wind Direction:
-        <div class="wind-dir-group">
-          <label><input type="checkbox" class="wind-dir" value="N"><span>N</span></label>
-          <label><input type="checkbox" class="wind-dir" value="NE"><span>NE</span></label>
-          <label><input type="checkbox" class="wind-dir" value="E"><span>E</span></label>
-          <label><input type="checkbox" class="wind-dir" value="SE"><span>SE</span></label>
-          <label><input type="checkbox" class="wind-dir" value="S"><span>S</span></label>
-          <label><input type="checkbox" class="wind-dir" value="SW"><span>SW</span></label>
-          <label><input type="checkbox" class="wind-dir" value="W"><span>W</span></label>
-          <label><input type="checkbox" class="wind-dir" value="NW"><span>NW</span></label>
-        </div>
-      </label>
 
-      <label>Humidity (%)
-        <div class="range-group">
-          <input type="number" id="humidityMin" placeholder="Min"/>
-          <input type="number" id="humidityMax" placeholder="Max"/>
-        </div>
-      </label>
+  <details>
+    <summary>🌡 Temperature</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="tempMin" placeholder="Min"/>
+        <input type="number" id="tempMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <label>Pressure (hPa)
-        <div class="range-group">
-          <input type="number" id="pressureMin" placeholder="Min"/>
-          <input type="number" id="pressureMax" placeholder="Max"/>
-        </div>
-      </label>
+  <details>
+    <summary>💨 Wind</summary>
+    <label>Speed (km/h)
+      <div class="range-group">
+        <input type="number" id="windMin" placeholder="Min"/>
+        <input type="number" id="windMax" placeholder="Max"/>
+      </div>
+    </label>
+    <label>Direction:
+      <div class="wind-dir-group">
+        <label><input type="checkbox" class="wind-dir" value="N"><span>N</span></label>
+        <label><input type="checkbox" class="wind-dir" value="NE"><span>NE</span></label>
+        <label><input type="checkbox" class="wind-dir" value="E"><span>E</span></label>
+        <label><input type="checkbox" class="wind-dir" value="SE"><span>SE</span></label>
+        <label><input type="checkbox" class="wind-dir" value="S"><span>S</span></label>
+        <label><input type="checkbox" class="wind-dir" value="SW"><span>SW</span></label>
+        <label><input type="checkbox" class="wind-dir" value="W"><span>W</span></label>
+        <label><input type="checkbox" class="wind-dir" value="NW"><span>NW</span></label>
+      </div>
+    </label>
+  </details>
+  
+  <details>
+  <summary>🌦 Weather Condition</summary>
+  <label>
+    <select id="weatherCondition">
+      <option value="">Any</option>
+      <option value="Clear">Clear Sky</option>
+      <option value="Clouds">Clouds</option>
+      <option value="Drizzle">Shower Rain</option>
+      <option value="Rain">Rain</option>
+      <option value="Thunderstorm">Thunderstorm</option>
+      <option value="Snow">Snow</option>
+      <option value="Mist">Mist</option>
+    </select>
+  </label>
+</details>
 
-      <label>Visibility (m)
-        <div class="range-group">
-          <input type="number" id="visibilityMin" placeholder="Min"/>
-          <input type="number" id="visibilityMax" placeholder="Max"/>
-        </div>
-      </label>
+  <details>
+    <summary>💧 Humidity</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="humidityMin" placeholder="Min"/>
+        <input type="number" id="humidityMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <label>Cloud Cover (%)
-        <div class="range-group">
-          <input type="number" id="cloudMin" placeholder="Min"/>
-          <input type="number" id="cloudMax" placeholder="Max"/>
-        </div>
-      </label>
+  <details>
+    <summary>🔽 Pressure</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="pressureMin" placeholder="Min"/>
+        <input type="number" id="pressureMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
 
-      <button onclick="applyFilters()">Apply Filters</button>
+  <details>
+    <summary>👁 Visibility</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="visibilityMin" placeholder="Min"/>
+        <input type="number"id="visibilityMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
+
+  
+  <details>
+    <summary>☁ Cloud Cover</summary>
+    <label>
+      <div class="range-group">
+        <input type="number" id="cloudMin" placeholder="Min"/>
+        <input type="number" id="cloudMax" placeholder="Max"/>
+      </div>
+    </label>
+  </details>
+  
+      <button id="resetFiltersBtn" style="margin-top: 0.5rem; background: 1976d2;">Reset Filters</button>
+      
+
     </div>
+
+      <div id="summaryPanel" class="summary-panel">
+        <div id="summary-data-content">
+            <p style="justify-self: center;">No data yet.</p>
+        </div>
+        <div id="summary-nav-controls" class="hidden">
+            <span class="arrow" onclick="navigateSummary('prev')">←</span>
+            <span id="summary-nav-text" class="nav-text"></span>
+            <span class="arrow" onclick="navigateSummary('next')">→</span>
+        </div>
+      </div>
+
+      
+      
+  
+
+    </div>
+    
+
+
+    
+
     <div class="map-container">
       <div id="map"></div>
+      
     </div>
+        <div id="legend" class="legend-panel">
+          
+  <h4>Weather Legend</h4>
+  <ul>
+    <li><img src="http://openweathermap.org/img/wn/01d.png" alt="Clear" width="128" height="128"/> Clear Sky</li>
+    <li><img src="http://openweathermap.org/img/wn/02d.png" alt="Few Clouds" width="128" height="128"/> Few Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/03d.png" alt="Scattered Clouds" width="128" height="128"/> Scattered Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/04d.png" alt="Broken Clouds" width="128" height="128"/> Broken Clouds</li>
+    <li><img src="http://openweathermap.org/img/wn/09d.png" alt="Shower Rain" width="128" height="128"/> Shower Rain</li>
+    <li><img src="http://openweathermap.org/img/wn/10d.png" alt="Rain" width="128" height="128"/> Rain</li>
+    <li><img src="http://openweathermap.org/img/wn/11d.png" alt="Thunderstorm" width="128" height="128"/> Thunderstorm</li>
+    <li><img src="http://openweathermap.org/img/wn/13d.png" alt="Snow" width="128" height="128"/> Snow</li>
+    <li><img src="http://openweathermap.org/img/wn/50d.png" alt="Mist" width="128" height="128"/> Mist</li>
+  </ul>
+</div>
+    
+
   </main>
 
+  <div id="graphContainer" class="hidden">
+    <canvas id="popupGraph"></canvas>
+  </div>
+  
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="script.js"></script>
+  <script>
+  const input = document.getElementById("dateInput");
+  const today = new Date();
+  const fiveDaysLater = new Date();
+  fiveDaysLater.setDate(today.getDate() + 5);
+
+  const formatDate = (date) => date.toISOString().split("T")[0];
+
+  input.min = formatDate(today);
+  input.max = formatDate(fiveDaysLater);
+</script>
+  
 </body>
 </html>
